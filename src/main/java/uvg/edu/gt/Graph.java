@@ -12,7 +12,8 @@ public class Graph {
     public Graph(int numVertices) {
         this.numVertices = numVertices;
         this.adjacencyMatrix = new int[numVertices][numVertices];
-        this.cityIndex = new HashMap<String, Integer>();
+        this.cityIndex = new HashMap<>();
+        this.shortestPaths = new int[numVertices][numVertices]; // Initialize shortestPaths array
     }
 
     public void addEdge(String source, String destination, int weight) {
@@ -30,6 +31,7 @@ public class Graph {
     public void floyd() {
         int[][] dist = new int[numVertices][numVertices];
 
+        // Initialize dist array with initial distances
         for (int i = 0; i < numVertices; i++) {
             for (int j = 0; j < numVertices; j++) {
                 if (i == j) {
@@ -42,12 +44,14 @@ public class Graph {
             }
         }
 
+        // Calculate shortest paths using Floyd-Warshall algorithm
         for (int k = 0; k < numVertices; k++) {
             for (int i = 0; i < numVertices; i++) {
+                if (dist[i][k] == Integer.MAX_VALUE) {
+                    continue;
+                }
                 for (int j = 0; j < numVertices; j++) {
-                    if (dist[i][k] != Integer.MAX_VALUE &&
-                            dist[k][j] != Integer.MAX_VALUE &&
-                            dist[i][k] + dist[k][j] < dist[i][j]) {
+                    if (dist[k][j] != Integer.MAX_VALUE && dist[i][k] + dist[k][j] < dist[i][j]) {
                         dist[i][j] = dist[i][k] + dist[k][j];
                     }
                 }
@@ -56,6 +60,7 @@ public class Graph {
 
         shortestPaths = dist;
     }
+
 
     public String findCenter() {
         int[] eccentricity = new int[numVertices];
@@ -112,6 +117,10 @@ public class Graph {
             }
         }
         return null;
+    }
+
+    public int getCityIndex(String city) {
+        return cityIndex.getOrDefault(city, -1);
     }
 
     public void addCity(String city, int index) {
